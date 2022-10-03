@@ -7,6 +7,11 @@ canvas.height = 500;
 let score = 0;
 let gameFrame = 0;
 ctx.font = "50px Georgia"
+
+// window.addEventListener("resize", function () {
+//     canvas.width = window.innerWidth;
+//     canvas.height = window.innerHeight;
+// })
 // mouse Interactivity
 const canvasPosition = canvas.getBoundingClientRect();
 
