@@ -24,6 +24,10 @@ canvas.addEventListener("mouseup", function () {
     mouse.click = false;
 })
 // Player
+const playerLeft = new Image();
+playerLeft.src = "./img/fish_swim_right.png";
+const playerRight = new Image();
+playerRight.src = "./img/fish_swim_left.png";
 class Player {
     constructor() {
         this.x = canvas.width;
@@ -39,6 +43,8 @@ class Player {
     update() {
         const dx = this.x - mouse.x;
         const dy = this.y - mouse.y;
+        let theta = Math.atan2(dy, dx);
+        this.angle = theta;
         if (mouse.x != this.x) {
             this.x -= dx / 20;
         }
@@ -60,6 +66,16 @@ class Player {
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
         ctx.fill()
         ctx.closePath();
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle);
+        if (this.x >= mouse.x) {
+            ctx.drawImage(playerRight, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, 0 - 60, 0 - 45, this.spriteWidth / 4, this.spriteHeight / 4)
+        } else {
+            ctx.drawImage(playerLeft, this.frameX * this.spriteWidth, this.frameY * this.spriteHeight, this.spriteWidth, this.spriteHeight, 0 - 60, 0 - 45, this.spriteWidth / 4, this.spriteHeight / 4)
+        }
+        ctx.restore()
     }
 }
 
@@ -75,7 +91,7 @@ class Bubble {
         this.speed = Math.random() * 5 + 1;
         this.distance;
         this.counted = false;
-        this.sound = Math.random() <= 0.5 ? "sound1" : "sound2"
+        this.sound = Math.random() <= 0.5 ? "sound1" : "sound2";
 
     }
     update() {
@@ -95,8 +111,9 @@ class Bubble {
 }
 const bubblePop1 = document.createElement("audio");
 bubblePop1.src = "./Sound/Plop.ogg";
+
 const bubblePop2 = document.createElement("audio");
-bubblePop1.src = "./Sound/bubbles-single2.wav";
+bubblePop2.src = "./Sound/bubbles-single2.wav";
 
 function handleBubbles() {
     if (gameFrame % 50 == 0) {
@@ -111,18 +128,22 @@ function handleBubbles() {
         if (bubblesArray[i].y < 0 - bubblesArray[i].radius * 2) {
             bubblesArray.splice(i, 1)
         }
-        if (bubblesArray[i].distance < bubblesArray[i].radius + player.radius) {
-            if (!bubblesArray[i].counted) {
-                if (bubblesArray[i].sound == "sound1") {
-                    bubblePop1.play();
-                } else {
-                    bubblePop2.play();
+        if (bubblesArray[i]) {
+            if (bubblesArray[i].distance < bubblesArray[i].radius + player.radius) {
+                if (!bubblesArray[i].counted) {
+                    if (bubblesArray[i].sound === "sound1") {
+                        bubblePop1.play();
+                    } else {
+                        bubblePop2.play();
+                    }
+                    score++;
+                    bubblesArray[i].counted = true;
+                    bubblesArray.splice(i, 1)
                 }
-                score++;
-                bubblesArray[i].counted = true;
-                bubblesArray.splice(i, 1)
             }
         }
+
+
     }
 }
 
